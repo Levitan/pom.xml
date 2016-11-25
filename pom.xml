@@ -3,11 +3,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openolat</groupId>
-	<artifactId>OpenOlatEdu</artifactId>
+	<artifactId>openolat-lms</artifactId>
 	<version>10.5-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>OO EDU LMS</name>
-	<url>http://www.edu.netcracker.com</url>
+	<name>OpenOLAT LMS</name>
+	<url>http://www.openolat.org</url>
 	<description>
   Welcome to the OpenOLAT (Open Online Learning And Training) Developer Project Site.  This site
   contains materials chiefly of concern to developers (e.g., unit testing and SCA output etc.)
@@ -290,11 +290,6 @@
 		<!-- This is the default build which had all dependencies needed by tomcat -->
 		<profile>
 			<id>tomcat</id>
-			<properties>
-				<skipTests>true</skipTests>
-				<skipITs>true</skipITs>
-				<cargo.container.wait>true</cargo.container.wait>
-			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -635,741 +630,458 @@
 			</build>
 		</profile>
 	
-		<!--<profile>-->
-			<!--<id>mysqlunittests</id>-->
-			<!--<activation>-->
-				<!--<property>-->
-					<!--<name>with-mysql</name>-->
-				<!--</property>-->
-			<!--</activation>-->
-			<!--<properties>-->
-				<!--<testFailureIgnore>false</testFailureIgnore>-->
-				<!--<test.env>mysql</test.env>-->
-				<!--<skipTests>false</skipTests>-->
-			<!--</properties>-->
-			<!--<build>-->
-				<!--<plugins>-->
-					<!--<plugin>-->
-						<!--<artifactId>maven-resources-plugin</artifactId>-->
-						<!--<version>2.4.3</version>-->
-						<!--<executions>-->
-							<!--<execution>-->
-								<!--<id>copy-resources-4-mysqlunittests</id>-->
-								<!--<phase>generate-test-resources</phase>-->
-								<!--<goals>-->
-									<!--<goal>copy-resources</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<outputDirectory>${basedir}/target/test-classes</outputDirectory>-->
-									<!--<resources>-->
-										<!--<resource>-->
-											<!--&lt;!&ndash; place resources you like to get filtered an copied &ndash;&gt;-->
-											<!--<directory>src/test/profile/${test.env}</directory>-->
-											<!--<includes>-->
-												<!--<include>olat.local.properties</include>-->
-											<!--</includes>-->
-											<!--<filtering>true</filtering>-->
-										<!--</resource>-->
-										<!--<resource>-->
-											<!--&lt;!&ndash; place resources you like to get filtered an copied &ndash;&gt;-->
-											<!--<directory>src/main/resources/database/mysql</directory>-->
-											<!--<includes>-->
-												<!--<include>setupDatabase.sql</include>-->
-											<!--</includes>-->
-											<!--<filtering>false</filtering>-->
-										<!--</resource>-->
-									<!--</resources>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-						<!--</executions>-->
-					<!--</plugin>-->
-					<!--<plugin>-->
-						<!--<groupId>org.codehaus.mojo</groupId>-->
-						<!--<artifactId>sql-maven-plugin</artifactId>-->
-						<!--<version>1.5</version>-->
-						<!--<dependencies>-->
-							<!--<dependency>-->
-								<!--<groupId>mysql</groupId>-->
-								<!--<artifactId>mysql-connector-java</artifactId>-->
-								<!--<version>${org.mysql.version}</version>-->
-							<!--</dependency>-->
-						<!--</dependencies>-->
-	<!---->
-						<!--&lt;!&ndash; common configuration shared by all executions &ndash;&gt;-->
-						<!--<configuration>-->
-							<!--<driver>com.mysql.jdbc.Driver</driver>-->
-							<!--<url>jdbc:mysql://localhost:${test.env.db.host.port}/${test.env.db.name}</url>-->
-							<!--<username>${test.env.db.user}</username>-->
-							<!--<password>${test.env.db.pass}</password>-->
-						<!--</configuration>-->
-	<!---->
-						<!--<executions>-->
-							<!--<execution>-->
-								<!--<id>drop-mysql-db-before-test</id>-->
-								<!--<phase>process-test-resources</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--&lt;!&ndash; need another database to drop the targeted one &ndash;&gt;-->
-									<!--<url>jdbc:mysql://localhost:${test.env.db.host.port}/olat</url>-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>-->
-									<!--&lt;!&ndash; ignore error when database is not avaiable &ndash;&gt;-->
-									<!--<onError>continue</onError>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-	<!---->
-							<!--<execution>-->
-								<!--<id>create-mysql-db</id>-->
-								<!--<phase>process-test-resources</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<url>jdbc:mysql://localhost:${test.env.db.host.port}/olat</url>-->
-									<!--&lt;!&ndash; no transaction &ndash;&gt;-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<sqlCommand>create database ${test.env.db.name} default character set utf8</sqlCommand>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-	<!---->
-							<!--<execution>-->
-								<!--<id>create-mysql-schema</id>-->
-								<!--<phase>process-test-resources</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<srcFiles>-->
-										<!--<srcFile>target/test-classes/setupDatabase.sql</srcFile>-->
-									<!--</srcFiles>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-							<!--&lt;!&ndash; drop db after test &ndash;&gt;-->
-							<!--<execution>-->
-								<!--<id>drop-mysql-db-after-test</id>-->
-								<!--&lt;!&ndash; there is no post-test phase, the next phase after "test" is "prepare-package" -->
-									<!--for integration tests running against mysql generated via setupDatabase.sql -->
-									<!--there is need to bind a similar drop/create/schema/drop to pre-integration-test -->
-									<!--and post-integration-test &ndash;&gt;-->
-								<!--<phase>prepare-package</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-							<!---->
-							<!--&lt;!&ndash; Same for integration-test &ndash;&gt;-->
-							<!--<execution>-->
-								<!--<id>drop-mysql-db-before-integration</id>-->
-								<!--<phase>pre-integration-test</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--&lt;!&ndash; need another database to drop the targeted one &ndash;&gt;-->
-									<!--<url>jdbc:mysql://localhost:${test.env.db.host.port}/olat</url>-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>-->
-									<!--&lt;!&ndash; ignore error when database is not avaiable &ndash;&gt;-->
-									<!--<onError>continue</onError>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-							<!--<execution>-->
-								<!--<id>create-mysql-db-before-integration-test</id>-->
-								<!--<phase>pre-integration-test</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<url>jdbc:mysql://localhost:${test.env.db.host.port}/olat</url>-->
-									<!--&lt;!&ndash; no transaction &ndash;&gt;-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<sqlCommand>create database ${test.env.db.name} default character set utf8</sqlCommand>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-							<!--<execution>-->
-								<!--<id>create-mysql-schema-before-integration-test</id>-->
-								<!--<phase>pre-integration-test</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<srcFiles>-->
-										<!--<srcFile>target/test-classes/setupDatabase.sql</srcFile>-->
-									<!--</srcFiles>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-							<!--&lt;!&ndash; drop db after test &ndash;&gt;-->
-							<!--<execution>-->
-								<!--<id>drop-mysql-db-after-integration-test</id>-->
-								<!--<phase>post-integration-test</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-						<!--</executions>-->
-					<!--</plugin>-->
-				<!--</plugins>-->
-			<!--</build>-->
-		<!--</profile>-->
-	
-		<!--<profile>-->
-			<!--<id>postgresqlunittests</id>-->
-			<!--<activation>-->
-				<!--<property>-->
-					<!--<name>with-postgresql</name>-->
-				<!--</property>-->
-			<!--</activation>-->
-			<!--<properties>-->
-				<!--<testFailureIgnore>false</testFailureIgnore>-->
-				<!--<test.env>postgresql</test.env>-->
-				<!--<skipTests>false</skipTests>-->
-			<!--</properties>-->
-			<!--<build>-->
-				<!--<plugins>-->
-					<!--<plugin>-->
-						<!--<artifactId>maven-resources-plugin</artifactId>-->
-						<!--<version>2.4.3</version>-->
-						<!--<executions>-->
-							<!--<execution>-->
-								<!--<id>copy-resources-4-postgresqlunittests</id>-->
-								<!--<phase>generate-test-resources</phase>-->
-								<!--<goals>-->
-									<!--<goal>copy-resources</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<outputDirectory>${basedir}/target/test-classes</outputDirectory>-->
-									<!--<resources>-->
-										<!--<resource>-->
-											<!--&lt;!&ndash; place resources you like to get filtered an copied &ndash;&gt;-->
-											<!--<directory>src/test/profile/${test.env}</directory>-->
-											<!--<includes>-->
-												<!--<include>olat.local.properties</include>-->
-											<!--</includes>-->
-											<!--<filtering>true</filtering>-->
-										<!--</resource>-->
-										<!--<resource>-->
-											<!--&lt;!&ndash; place resources you like to get filtered an copied &ndash;&gt;-->
-											<!--<directory>src/main/resources/database/postgresql</directory>-->
-											<!--<includes>-->
-												<!--<include>setupDatabase.sql</include>-->
-											<!--</includes>-->
-											<!--<filtering>true</filtering>-->
-										<!--</resource>-->
-									<!--</resources>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-						<!--</executions>-->
-					<!--</plugin>-->
-					<!--<plugin>-->
-						<!--<groupId>org.codehaus.mojo</groupId>-->
-						<!--<artifactId>sql-maven-plugin</artifactId>-->
-						<!--<version>1.5</version>-->
-	<!---->
-						<!--<dependencies>-->
-							<!--<dependency>-->
-								<!--<groupId>org.postgresql</groupId>-->
-								<!--<artifactId>postgresql</artifactId>-->
-								<!--<version>${org.postgresql.version}</version>-->
-								<!--<exclusions>-->
-									<!--<exclusion>-->
-										<!--<groupId>com.github.dblock.waffle</groupId>-->
-										<!--<artifactId>waffle-jna</artifactId>-->
-									<!--</exclusion>-->
-									<!--<exclusion>-->
-										<!--<groupId>org.slf4j</groupId>-->
-										<!--<artifactId>slf4j-simple</artifactId>-->
-									<!--</exclusion>-->
-								<!--</exclusions>-->
-							<!--</dependency>-->
-						<!--</dependencies>-->
-	<!---->
-						<!--&lt;!&ndash; common configuration shared by all executions &ndash;&gt;-->
-						<!--<configuration>-->
-							<!--<driver>org.postgresql.Driver</driver>-->
-							<!--<url>jdbc:postgresql://localhost:${test.env.db.postgresql.host.port}/${test.env.db.name}</url>-->
-							<!--<username>${test.env.db.postgresql.user}</username>-->
-							<!--<password>${test.env.db.postgresql.pass}</password>-->
-						<!--</configuration>-->
-	<!---->
-						<!--<executions>-->
-							<!--<execution>-->
-								<!--<id>drop-postgresql-db-before-test</id>-->
-								<!--<phase>process-test-resources</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--&lt;!&ndash; need another database to drop the targeted one &ndash;&gt;-->
-									<!--<url>jdbc:postgresql://localhost:${test.env.db.postgresql.host.port}/postgres</url>-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>-->
-									<!--&lt;!&ndash; ignore error when database is not avaiable &ndash;&gt;-->
-									<!--<onError>continue</onError>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-	<!---->
-							<!--<execution>-->
-								<!--<id>create-postgresql-db</id>-->
-								<!--<phase>process-test-resources</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<url>jdbc:postgresql://localhost:${test.env.db.postgresql.host.port}/postgres</url>-->
-									<!--&lt;!&ndash; no transaction &ndash;&gt;-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<sqlCommand>create database ${test.env.db.name}</sqlCommand>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-	<!---->
-							<!--<execution>-->
-								<!--<id>create-postgresql-schema</id>-->
-								<!--<phase>process-test-resources</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<srcFiles>-->
-										<!--<srcFile>target/test-classes/setupDatabase.sql</srcFile>-->
-									<!--</srcFiles>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-	<!---->
-							<!--&lt;!&ndash; drop db after test &ndash;&gt;-->
-							<!--<execution>-->
-								<!--<id>drop-postgresql-db-after-test</id>-->
-								<!--&lt;!&ndash; there is no post-test phase, the next phase after "test" is "prepare-package" -->
-									<!--for integration tests running against mysql generated via setupDatabase.sql -->
-									<!--there is need to bind a similar drop/create/schema/drop to pre-integration-test -->
-									<!--and post-integration-test &ndash;&gt;-->
-								<!--<phase>prepare-package</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<url>jdbc:postgresql://localhost:${test.env.db.postgresql.host.port}/postgres</url>-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-	<!---->
-							<!--&lt;!&ndash; Same for integration tests &ndash;&gt;-->
-							<!--<execution>-->
-								<!--<id>drop-postgresql-db-before-integtration-test</id>-->
-								<!--<phase>pre-integration-test</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--&lt;!&ndash; need another database to drop the targeted one &ndash;&gt;-->
-									<!--<url>jdbc:postgresql://localhost:${test.env.db.postgresql.host.port}/postgres</url>-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>-->
-									<!--&lt;!&ndash; ignore error when database is not avaiable &ndash;&gt;-->
-									<!--<onError>continue</onError>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-	<!---->
-							<!--<execution>-->
-								<!--<id>create-postgresql-db-before-integration-test</id>-->
-								<!--<phase>pre-integration-test</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<url>jdbc:postgresql://localhost:${test.env.db.postgresql.host.port}/postgres</url>-->
-									<!--&lt;!&ndash; no transaction &ndash;&gt;-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<sqlCommand>create database ${test.env.db.name}</sqlCommand>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-	<!---->
-							<!--<execution>-->
-								<!--<id>create-postgresql-schema-before-integration-test</id>-->
-								<!--<phase>pre-integration-test</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<srcFiles>-->
-										<!--<srcFile>target/test-classes/setupDatabase.sql</srcFile>-->
-									<!--</srcFiles>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-	<!---->
-							<!--&lt;!&ndash; drop db after test &ndash;&gt;-->
-							<!--<execution>-->
-								<!--<id>drop-postgresql-db-after-integration-test</id>-->
-								<!--<phase>post-integration-test</phase>-->
-								<!--<goals>-->
-									<!--<goal>execute</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<url>jdbc:postgresql://localhost:${test.env.db.postgresql.host.port}/postgres</url>-->
-									<!--<autocommit>true</autocommit>-->
-									<!--<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-						<!--</executions>-->
-					<!--</plugin>-->
-				<!--</plugins>-->
-			<!--</build>-->
-		<!--</profile>-->
-	
-		<!--<profile>-->
-			<!--<id>oracleunittests</id>-->
-			<!--<activation>-->
-				<!--<property>-->
-					<!--<name>with-oracle</name>-->
-				<!--</property>-->
-			<!--</activation>-->
-			<!--<properties>-->
-				<!--<testFailureIgnore>false</testFailureIgnore>-->
-				<!--<test.env>oracle</test.env>-->
-			<!--</properties>-->
-			<!--<build>-->
-				<!--<plugins>-->
-					<!--<plugin>-->
-						<!--<artifactId>maven-resources-plugin</artifactId>-->
-						<!--<version>2.4.3</version>-->
-						<!--<executions>-->
-							<!--<execution>-->
-								<!--<id>copy-resources-4-oracleunittests</id>-->
-								<!--<phase>generate-test-resources</phase>-->
-								<!--<goals>-->
-									<!--<goal>copy-resources</goal>-->
-								<!--</goals>-->
-								<!--<configuration>-->
-									<!--<outputDirectory>${basedir}/target/test-classes</outputDirectory>-->
-									<!--<resources>-->
-										<!--<resource>-->
-											<!--&lt;!&ndash; place resources you like to get filtered an copied &ndash;&gt;-->
-											<!--<directory>src/test/profile/${test.env}</directory>-->
-											<!--<includes>-->
-												<!--<include>olat.local.properties</include>-->
-											<!--</includes>-->
-											<!--<filtering>true</filtering>-->
-										<!--</resource>-->
-										<!--<resource>-->
-											<!--&lt;!&ndash; place resources you like to get filtered an copied &ndash;&gt;-->
-											<!--<directory>src/main/resources/database/oracle</directory>-->
-											<!--<includes>-->
-												<!--<include>setupDatabase.sql</include>-->
-											<!--</includes>-->
-											<!--<filtering>true</filtering>-->
-										<!--</resource>-->
-									<!--</resources>-->
-								<!--</configuration>-->
-							<!--</execution>-->
-						<!--</executions>-->
-					<!--</plugin>-->
-				<!--</plugins>-->
-			<!--</build>-->
-			<!--<dependencies>-->
-				<!--<dependency>-->
-					<!--<groupId>com.oracle</groupId>-->
-					<!--<artifactId>ojdbc6</artifactId>-->
-					<!--<version>11.0</version>-->
-					<!--<optional>true</optional>-->
-				<!--</dependency>-->
-			<!--</dependencies>-->
-		<!--</profile>-->
 		<profile>
-			<id>debug</id>
+			<id>mysqlunittests</id>
+			<activation>
+				<property>
+					<name>with-mysql</name>
+				</property>
+			</activation>
 			<properties>
-				<skipTests>true</skipTests>
-				<skipITs>true</skipITs>
-				<cargo.container.wait>true</cargo.container.wait>
+				<testFailureIgnore>false</testFailureIgnore>
+				<test.env>mysql</test.env>
+				<skipTests>false</skipTests>
 			</properties>
-		</profile>
-		<profile>
-			<id>jetty</id>
 			<build>
-
 				<plugins>
 					<plugin>
-						<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-maven-plugin -->
-						<groupId>org.eclipse.jetty</groupId>
-						<artifactId>jetty-maven-plugin</artifactId>
-						<version>9.3.8.v20160314</version>
-						<configuration>
-
-
-
-							<webApp>
-								<contextPath>/</contextPath>
-								<!--<baseResource>src/main/webapp-tomcat/</baseResource>-->
-								<!--<connectors>
-									<connector implementation="org.eclipse.jetty.nio.SelectChannelConnector">
-										<port>8080</port>
-									</connector>
-									<connector implementation="org.eclipse.jetty.ssl.SslSelectChannelConnector">
-										<port>8443</port>
-										<keystore>${basedir}/jetty-ssl.keystore</keystore>
-										<password>jetty6</password>
-										<keyPassword>jetty6</keyPassword>
-									</connector>
-								</connectors>-->
-							</webApp>
-
-
-							<webAppConfig>
-								<extraClasspath>${basedir}/resources/</extraClasspath>
-								<!--<resourceBase>/src/main/webapp-tomcat/</resourceBase>-->
-							</webAppConfig>
-						</configuration>
-						<!--<groupId>org.mortbay.jetty</groupId>
-						<artifactId>jetty-maven-plugin</artifactId>
-						<version>7.0.0.pre5</version>
-						<configuration>
-							<contextPath>/</contextPath>
-							<connectors>
-								<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-									<port>8080</port>
-								</connector>
-								<connector implementation="org.mortbay.jetty.ssl.SslSelectChannelConnector">
-									<port>8443</port>
-									<keystore>${basedir}/jetty-ssl.keystore</keystore>
-									<password>jetty6</password>
-									<keyPassword>jetty6</keyPassword>
-								</connector>
-							</connectors>
-							<webAppConfig>
-								<extraClasspath>${basedir}/resources/</extraClasspath>
-							</webAppConfig>
-						</configuration>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>2.4.3</version>
+						<executions>
+							<execution>
+								<id>copy-resources-4-mysqlunittests</id>
+								<phase>generate-test-resources</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${basedir}/target/test-classes</outputDirectory>
+									<resources>
+										<resource>
+											<!-- place resources you like to get filtered an copied -->
+											<directory>src/test/profile/${test.env}</directory>
+											<includes>
+												<include>olat.local.properties</include>
+											</includes>
+											<filtering>true</filtering>
+										</resource>
+										<resource>
+											<!-- place resources you like to get filtered an copied -->
+											<directory>src/main/resources/database/mysql</directory>
+											<includes>
+												<include>setupDatabase.sql</include>
+											</includes>
+											<filtering>false</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>sql-maven-plugin</artifactId>
+						<version>1.5</version>
 						<dependencies>
 							<dependency>
-								<groupId>org.mortbay.jetty</groupId>
-								<artifactId>jetty-ssl</artifactId>
-								<version>7.0.0.pre5</version>
+								<groupId>mysql</groupId>
+								<artifactId>mysql-connector-java</artifactId>
+								<version>${org.mysql.version}</version>
 							</dependency>
-						</dependencies>-->
-					</plugin>
-					<!--<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>tomcat-maven-plugin</artifactId>
-						<version>1.1</version>
+						</dependencies>
+	
+						<!-- common configuration shared by all executions -->
 						<configuration>
-							<url>http://training.netcracker.com/manager/html</url>
-							<username>tomcat</username>
-							<password>87h23z23ll90ew</password>
-							<update>false</update>
-							<path>/</path>
+							<driver>com.mysql.jdbc.Driver</driver>
+							<url>jdbc:mysql://localhost:${test.env.db.host.port}/${test.env.db.name}</url>
+							<username>${test.env.db.user}</username>
+							<password>${test.env.db.pass}</password>
 						</configuration>
-					</plugin>-->
+	
+						<executions>
+							<execution>
+								<id>drop-mysql-db-before-test</id>
+								<phase>process-test-resources</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<!-- need another database to drop the targeted one -->
+									<url>jdbc:mysql://localhost:${test.env.db.host.port}/olat</url>
+									<autocommit>true</autocommit>
+									<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>
+									<!-- ignore error when database is not avaiable -->
+									<onError>continue</onError>
+								</configuration>
+							</execution>
+	
+							<execution>
+								<id>create-mysql-db</id>
+								<phase>process-test-resources</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<url>jdbc:mysql://localhost:${test.env.db.host.port}/olat</url>
+									<!-- no transaction -->
+									<autocommit>true</autocommit>
+									<sqlCommand>create database ${test.env.db.name} default character set utf8</sqlCommand>
+								</configuration>
+							</execution>
+	
+							<execution>
+								<id>create-mysql-schema</id>
+								<phase>process-test-resources</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<autocommit>true</autocommit>
+									<srcFiles>
+										<srcFile>target/test-classes/setupDatabase.sql</srcFile>
+									</srcFiles>
+								</configuration>
+							</execution>
+							<!-- drop db after test -->
+							<execution>
+								<id>drop-mysql-db-after-test</id>
+								<!-- there is no post-test phase, the next phase after "test" is "prepare-package" 
+									for integration tests running against mysql generated via setupDatabase.sql 
+									there is need to bind a similar drop/create/schema/drop to pre-integration-test 
+									and post-integration-test -->
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<autocommit>true</autocommit>
+									<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>
+								</configuration>
+							</execution>
+							
+							<!-- Same for integration-test -->
+							<execution>
+								<id>drop-mysql-db-before-integration</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<!-- need another database to drop the targeted one -->
+									<url>jdbc:mysql://localhost:${test.env.db.host.port}/olat</url>
+									<autocommit>true</autocommit>
+									<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>
+									<!-- ignore error when database is not avaiable -->
+									<onError>continue</onError>
+								</configuration>
+							</execution>
+							<execution>
+								<id>create-mysql-db-before-integration-test</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<url>jdbc:mysql://localhost:${test.env.db.host.port}/olat</url>
+									<!-- no transaction -->
+									<autocommit>true</autocommit>
+									<sqlCommand>create database ${test.env.db.name} default character set utf8</sqlCommand>
+								</configuration>
+							</execution>
+							<execution>
+								<id>create-mysql-schema-before-integration-test</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<autocommit>true</autocommit>
+									<srcFiles>
+										<srcFile>target/test-classes/setupDatabase.sql</srcFile>
+									</srcFiles>
+								</configuration>
+							</execution>
+							<!-- drop db after test -->
+							<execution>
+								<id>drop-mysql-db-after-integration-test</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<autocommit>true</autocommit>
+									<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	
+		<profile>
+			<id>postgresqlunittests</id>
+			<activation>
+				<property>
+					<name>with-postgresql</name>
+				</property>
+			</activation>
+			<properties>
+				<testFailureIgnore>false</testFailureIgnore>
+				<test.env>postgresql</test.env>
+				<skipTests>false</skipTests>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>2.4.3</version>
+						<executions>
+							<execution>
+								<id>copy-resources-4-postgresqlunittests</id>
+								<phase>generate-test-resources</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${basedir}/target/test-classes</outputDirectory>
+									<resources>
+										<resource>
+											<!-- place resources you like to get filtered an copied -->
+											<directory>src/test/profile/${test.env}</directory>
+											<includes>
+												<include>olat.local.properties</include>
+											</includes>
+											<filtering>true</filtering>
+										</resource>
+										<resource>
+											<!-- place resources you like to get filtered an copied -->
+											<directory>src/main/resources/database/postgresql</directory>
+											<includes>
+												<include>setupDatabase.sql</include>
+											</includes>
+											<filtering>true</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>sql-maven-plugin</artifactId>
+						<version>1.5</version>
+	
+						<dependencies>
+							<dependency>
+								<groupId>org.postgresql</groupId>
+								<artifactId>postgresql</artifactId>
+								<version>${org.postgresql.version}</version>
+								<exclusions>
+									<exclusion>
+										<groupId>com.github.dblock.waffle</groupId>
+										<artifactId>waffle-jna</artifactId>
+									</exclusion>
+									<exclusion>
+										<groupId>org.slf4j</groupId>
+										<artifactId>slf4j-simple</artifactId>
+									</exclusion>
+								</exclusions>
+							</dependency>
+						</dependencies>
+	
+						<!-- common configuration shared by all executions -->
+						<configuration>
+							<driver>org.postgresql.Driver</driver>
+							<url>jdbc:postgresql://localhost:${test.env.db.postgresql.host.port}/${test.env.db.name}</url>
+							<username>${test.env.db.postgresql.user}</username>
+							<password>${test.env.db.postgresql.pass}</password>
+						</configuration>
+	
+						<executions>
+							<execution>
+								<id>drop-postgresql-db-before-test</id>
+								<phase>process-test-resources</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<!-- need another database to drop the targeted one -->
+									<url>jdbc:postgresql://localhost:${test.env.db.postgresql.host.port}/postgres</url>
+									<autocommit>true</autocommit>
+									<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>
+									<!-- ignore error when database is not avaiable -->
+									<onError>continue</onError>
+								</configuration>
+							</execution>
+	
+							<execution>
+								<id>create-postgresql-db</id>
+								<phase>process-test-resources</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<url>jdbc:postgresql://localhost:${test.env.db.postgresql.host.port}/postgres</url>
+									<!-- no transaction -->
+									<autocommit>true</autocommit>
+									<sqlCommand>create database ${test.env.db.name}</sqlCommand>
+								</configuration>
+							</execution>
+	
+							<execution>
+								<id>create-postgresql-schema</id>
+								<phase>process-test-resources</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<autocommit>true</autocommit>
+									<srcFiles>
+										<srcFile>target/test-classes/setupDatabase.sql</srcFile>
+									</srcFiles>
+								</configuration>
+							</execution>
+	
+							<!-- drop db after test -->
+							<execution>
+								<id>drop-postgresql-db-after-test</id>
+								<!-- there is no post-test phase, the next phase after "test" is "prepare-package" 
+									for integration tests running against mysql generated via setupDatabase.sql 
+									there is need to bind a similar drop/create/schema/drop to pre-integration-test 
+									and post-integration-test -->
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<url>jdbc:postgresql://localhost:${test.env.db.postgresql.host.port}/postgres</url>
+									<autocommit>true</autocommit>
+									<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>
+								</configuration>
+							</execution>
+	
+							<!-- Same for integration tests -->
+							<execution>
+								<id>drop-postgresql-db-before-integtration-test</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<!-- need another database to drop the targeted one -->
+									<url>jdbc:postgresql://localhost:${test.env.db.postgresql.host.port}/postgres</url>
+									<autocommit>true</autocommit>
+									<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>
+									<!-- ignore error when database is not avaiable -->
+									<onError>continue</onError>
+								</configuration>
+							</execution>
+	
+							<execution>
+								<id>create-postgresql-db-before-integration-test</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<url>jdbc:postgresql://localhost:${test.env.db.postgresql.host.port}/postgres</url>
+									<!-- no transaction -->
+									<autocommit>true</autocommit>
+									<sqlCommand>create database ${test.env.db.name}</sqlCommand>
+								</configuration>
+							</execution>
+	
+							<execution>
+								<id>create-postgresql-schema-before-integration-test</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<autocommit>true</autocommit>
+									<srcFiles>
+										<srcFile>target/test-classes/setupDatabase.sql</srcFile>
+									</srcFiles>
+								</configuration>
+							</execution>
+	
+							<!-- drop db after test -->
+							<execution>
+								<id>drop-postgresql-db-after-integration-test</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<url>jdbc:postgresql://localhost:${test.env.db.postgresql.host.port}/postgres</url>
+									<autocommit>true</autocommit>
+									<sqlCommand>drop database if exists ${test.env.db.name}</sqlCommand>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	
+		<profile>
+			<id>oracleunittests</id>
+			<activation>
+				<property>
+					<name>with-oracle</name>
+				</property>
+			</activation>
+			<properties>
+				<testFailureIgnore>false</testFailureIgnore>
+				<test.env>oracle</test.env>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>2.4.3</version>
+						<executions>
+							<execution>
+								<id>copy-resources-4-oracleunittests</id>
+								<phase>generate-test-resources</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${basedir}/target/test-classes</outputDirectory>
+									<resources>
+										<resource>
+											<!-- place resources you like to get filtered an copied -->
+											<directory>src/test/profile/${test.env}</directory>
+											<includes>
+												<include>olat.local.properties</include>
+											</includes>
+											<filtering>true</filtering>
+										</resource>
+										<resource>
+											<!-- place resources you like to get filtered an copied -->
+											<directory>src/main/resources/database/oracle</directory>
+											<includes>
+												<include>setupDatabase.sql</include>
+											</includes>
+											<filtering>true</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
 			</build>
 			<dependencies>
-
 				<dependency>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-					<version>1.2.17</version>
-				</dependency>
-				<!-- Jersey for tomcat -->
-				<dependency>
-					<groupId>javax.ws.rs</groupId>
-					<artifactId>jsr311-api</artifactId>
-					<version>1.1.1</version>
-				</dependency>
-				<dependency>
-					<groupId>com.sun.jersey</groupId>
-					<artifactId>jersey-server</artifactId>
-					<version>${com.sun.jersey.version}</version>
-					<exclusions>
-						<exclusion>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-core</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-beans</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-context</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-web</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-aop</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-jca</artifactId>
-						</exclusion>
-					</exclusions>
-				</dependency>
-				<dependency>
-					<groupId>com.sun.jersey</groupId>
-					<artifactId>jersey-servlet</artifactId>
-					<version>${com.sun.jersey.version}</version>
-				</dependency>
-
-				<dependency>
-					<groupId>dom4j</groupId>
-					<artifactId>dom4j</artifactId>
-					<version>1.6.1</version>
-				</dependency>
-				<dependency>
-					<groupId>org.hibernate</groupId>
-					<artifactId>hibernate-core</artifactId>
-					<version>${org.hibernate.version}</version>
-					<exclusions>
-						<exclusion>
-							<groupId>org.slf4j</groupId>
-							<artifactId>slf4j-log4j12</artifactId>
-						</exclusion>
-					</exclusions>
-				</dependency>
-				<dependency>
-					<groupId>org.hibernate</groupId>
-					<artifactId>hibernate-entitymanager</artifactId>
-					<version>${org.hibernate.version}</version>
-				</dependency>
-				<dependency>
-					<groupId>org.hibernate</groupId>
-					<artifactId>hibernate-infinispan</artifactId>
-					<version>${org.hibernate.version}</version>
-				</dependency>
-				<dependency>
-					<groupId>org.hibernate</groupId>
-					<artifactId>hibernate-hikaricp</artifactId>
-					<version>${org.hibernate.version}</version>
-				</dependency>
-
-				<dependency>
-					<groupId>org.infinispan</groupId>
-					<artifactId>infinispan-core</artifactId>
-					<version>${org.infinispan.version}</version>
-					<exclusions>
-						<exclusion>
-							<groupId>org.jboss.spec.javax.transaction</groupId>
-							<artifactId>jboss-transaction-api_1.1_spec</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.jboss.logging</groupId>
-							<artifactId>jboss-logging</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.codehaus.woodstox</groupId>
-							<artifactId>woodstox-core-asl</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.codehaus.woodstox</groupId>
-							<artifactId>stax2-api</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.rhq.helpers</groupId>
-							<artifactId>rhq-pluginAnnotations</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.jgroups</groupId>
-							<artifactId>jgroups</artifactId>
-						</exclusion>
-					</exclusions>
-				</dependency>
-
-				<dependency>
-					<groupId>mysql</groupId>
-					<artifactId>mysql-connector-java</artifactId>
-					<version>${org.mysql.version}</version>
-				</dependency>
-				<dependency>
-					<groupId>org.postgresql</groupId>
-					<artifactId>postgresql</artifactId>
-					<version>${org.postgresql.version}</version>
-					<exclusions>
-						<exclusion>
-							<groupId>com.github.dblock.waffle</groupId>
-							<artifactId>waffle-jna</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.slf4j</groupId>
-							<artifactId>slf4j-simple</artifactId>
-						</exclusion>
-					</exclusions>
-				</dependency>
-
-				<dependency>
-					<groupId>org.apache.geronimo.specs</groupId>
-					<artifactId>geronimo-jms_1.1_spec</artifactId>
-					<version>1.1.1</version>
-				</dependency>
-				<dependency>
-					<groupId>org.apache.activemq</groupId>
-					<artifactId>activemq-client</artifactId>
-					<version>${activemq.version}</version>
-				</dependency>
-				<dependency>
-					<groupId>org.apache.activemq</groupId>
-					<artifactId>activemq-broker</artifactId>
-					<version>${activemq.version}</version>
-				</dependency>
-				<dependency>
-					<groupId>org.apache.activemq</groupId>
-					<artifactId>activemq-spring</artifactId>
-					<version>${activemq.version}</version>
-					<exclusions>
-						<exclusion>
-							<groupId>org.apache.xbean</groupId>
-							<artifactId>xbean-spring</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.apache.activemq</groupId>
-							<artifactId>activemq-pool</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>org.apache.geronimo.specs</groupId>
-							<artifactId>geronimo-jta_1.0.1B_spec</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>commons-pool</groupId>
-							<artifactId>commons-pool</artifactId>
-						</exclusion>
-					</exclusions>
-				</dependency>
-				<!-- webservice stack -->
-				<dependency>
-					<groupId>com.sun.xml.ws</groupId>
-					<artifactId>jaxws-rt</artifactId>
-					<version>2.2.6</version>
-					<exclusions>
-						<exclusion>
-							<groupId>javax.activation</groupId>
-							<artifactId>activation</artifactId>
-						</exclusion>
-					</exclusions>
-				</dependency>
-				<dependency>
-					<groupId>com.sun.xml.fastinfoset</groupId>
-					<artifactId>FastInfoset</artifactId>
-					<version>1.2.8</version>
+					<groupId>com.oracle</groupId>
+					<artifactId>ojdbc6</artifactId>
+					<version>11.0</version>
+					<optional>true</optional>
 				</dependency>
 			</dependencies>
-
 		</profile>
 	</profiles>
 	<repositories>
@@ -1479,8 +1191,8 @@
 				</excludes>
 			</resource>
 		</resources>
-		<!--<testResources>
-			&lt;!&ndash; Same comment as for src/main/java also applies to src/test/java &ndash;&gt;
+		<testResources>
+			<!-- Same comment as for src/main/java also applies to src/test/java -->
 			<testResource>
 				<directory>src/test/java</directory>
 				<excludes>
@@ -1489,13 +1201,13 @@
 			</testResource>
 			<testResource>
 				<directory>src/test/resources</directory>
-				&lt;!&ndash; when enabled resources will be searched and variables replaces with values &ndash;&gt;
+				<!-- when enabled resources will be searched and variables replaces with values -->
 				<filtering>true</filtering>
 			</testResource>
-		</testResources>-->
+		</testResources>
 		<plugins>
 			<!-- Set the build number from mercurial -->
-			<!--<plugin>
+			<plugin>
 				<groupId>org.openolat.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
 				<version>1.2.0</version>
@@ -1511,7 +1223,7 @@
 					<doCheck>true</doCheck>
 					<doUpdate>true</doUpdate>
 				</configuration>
-			</plugin>-->
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -1623,18 +1335,6 @@
 						<target>1.8</target>
 						<encoding>UTF-8</encoding>
 					</configuration>
-					<executions>
-						<execution>
-							<id>default-testCompile</id>
-							<phase>test-compile</phase>
-							<goals>
-								<goal>testCompile</goal>
-							</goals>
-							<configuration>
-								<skip>true</skip>
-							</configuration>
-						</execution>
-					</executions>
 				</plugin>
 
 				<plugin>
@@ -1644,7 +1344,7 @@
 					<configuration>
 						<attachClasses>true</attachClasses>
 						<directory>src/main/java</directory>
-						<!--<archive>
+						<archive>
 							<manifest>
 								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							</manifest>
@@ -1654,7 +1354,7 @@
 								<Build-Revision-Number>${revisionNumber}</Build-Revision-Number>
 								<Implementation-Build>${buildNumber}</Implementation-Build>
 							</manifestEntries>
-						</archive>-->
+						</archive>
 						<excludes>**/*.pxm, **/*.psd, **/*.scss, **/*.sh, static/bootstrap/**, **/*.README</excludes>
 						<webResources>
 							<resource>
@@ -2580,7 +2280,7 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		<!--<dependency>
+		<dependency>
 		    <groupId>io.undertow</groupId>
 		    <artifactId>undertow-core</artifactId>
 		    <version>1.2.9.Final</version>
@@ -2591,7 +2291,7 @@
 		    <artifactId>undertow-servlet</artifactId>
 		    <version>1.2.9.Final</version>
 			<scope>test</scope>
-		</dependency>-->
+		</dependency>
     
 		<!-- Start test dependencies for Arquillian and Selenium -->
     	<dependency>
